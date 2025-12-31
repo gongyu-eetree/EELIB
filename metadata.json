@@ -1,0 +1,8 @@
+{
+  "name": "EELIB - Hardware Intelligence",
+  "description": "AI-driven tool for hardware engineers, FAEs, and sales. Features component identification, circuit analysis, BOM optimization, and real-time technical consultation.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
