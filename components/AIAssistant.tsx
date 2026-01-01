@@ -14,12 +14,12 @@ interface AIAssistantProps {
 }
 
 const taskPrompts: Record<string, string> = {
-  '组件识别': '请识别图像中的电子元器件，提供型号建议、封装类型和关键规格。',
-  '电路分析': '分析原理图逻辑，解释工作流程，评估设计合理性，并建议改进措施。',
-  '波形诊断': '分析示波器/逻辑分析仪波形，判断信号质量，并指出过冲、毛刺或时序问题。',
-  '设计优化': '识别组件并推荐更具成本效益或供应链稳定的替代方案。',
-  'PCB审查': '审查 PCB 布局/布线，评估散热设计、信号完整性和 EMI 抑制。',
-  '替代方案': '为图像中的核心芯片寻找 3 个 Pin-to-Pin 或功能兼容的高可靠性替代方案。',
+  'Component Recognition': 'Identify the electronic components in the image, provide MPN suggestions, package types, and key specs.',
+  'Circuit Analysis': 'Analyze the schematic logic, explain the workflow, evaluate design rationality, and suggest improvements.',
+  'Waveform Diagnosis': 'Analyze the oscilloscope/logic analyzer waveform, judge signal quality, and identify overshoot or timing issues.',
+  'Design Optimization': 'Identify components and recommend more cost-effective or supply-chain stable alternatives.',
+  'PCB Review': 'Review the PCB layout/routing, evaluate thermal design, signal integrity, and EMI suppression.',
+  'Alternatives': 'Find 3 Pin-to-Pin or functionally compatible high-reliability alternatives for the core chips in the image.',
 };
 
 const AIAssistant: React.FC<AIAssistantProps> = ({ credits, onConsume, history, onSaveHistory }) => {
@@ -27,8 +27,8 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ credits, onConsume, history, 
   const [image, setImage] = useState<string | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<string | null>(null);
-  const [activeTask, setActiveTask] = useState('组件识别');
-  const [customPrompt, setCustomPrompt] = useState(taskPrompts['组件识别']);
+  const [activeTask, setActiveTask] = useState('Component Recognition');
+  const [customPrompt, setCustomPrompt] = useState(taskPrompts['Component Recognition']);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -56,12 +56,12 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ credits, onConsume, history, 
     const targetImage = base64 || (image ? image.split(',')[1] : null);
     
     if (!targetImage) {
-      setError('请先上传图片。');
+      setError('Please upload an image first.');
       return;
     }
 
     if (!onConsume(1)) {
-      setError('额度不足，请在“我的”页面充值。');
+      setError('Insufficient credits. Please top up in the Profile page.');
       return;
     }
 
@@ -88,48 +88,62 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ credits, onConsume, history, 
       <div className="flex justify-between items-center bg-white/50 backdrop-blur-sm p-3 px-5 rounded-2xl border border-slate-100 shadow-sm">
         <div className="flex items-center space-x-2">
           <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">系统状态</span>
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">System Status</span>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-[11px] font-bold text-slate-800">点数余额: {credits} pt</span>
+          <span className="text-[11px] font-bold text-slate-800">{credits} pts</span>
           <div className="w-px h-3 bg-slate-200"></div>
-          <span className="text-[10px] text-indigo-600 font-bold">Pro会员</span>
+          <span className="text-[10px] text-indigo-600 font-bold uppercase tracking-tighter">Pro Tier</span>
         </div>
       </div>
 
-      <div className="flex bg-white rounded-2xl p-1 shadow-sm border border-slate-200">
-        <button onClick={() => setMode('IMAGE')} className={`flex-1 py-2.5 text-xs font-black rounded-xl transition-all ${mode === 'IMAGE' ? 'text-indigo-600 bg-indigo-50 shadow-sm' : 'text-slate-400'}`}>图像分析</button>
-        <button onClick={() => setMode('CHAT')} className={`flex-1 py-2.5 text-xs font-black rounded-xl transition-all ${mode === 'CHAT' ? 'text-indigo-600 bg-indigo-50 shadow-sm' : 'text-slate-400'}`}>技术咨询</button>
-        <button onClick={() => setMode('HISTORY')} className={`flex-none px-4 py-2.5 text-xs font-black rounded-xl transition-all ${mode === 'HISTORY' ? 'text-indigo-600 bg-indigo-50 shadow-sm' : 'text-slate-400'}`}>记录</button>
+      <div className="flex bg-white rounded-2xl p-1.5 shadow-sm border border-slate-200">
+        <button onClick={() => setMode('IMAGE')} className={`flex-1 py-3 text-xs font-black rounded-xl transition-all ${mode === 'IMAGE' ? 'text-indigo-600 bg-indigo-50 shadow-sm' : 'text-slate-400'}`}>Image Analysis</button>
+        <button onClick={() => setMode('CHAT')} className={`flex-1 py-3 text-xs font-black rounded-xl transition-all ${mode === 'CHAT' ? 'text-indigo-600 bg-indigo-50 shadow-sm' : 'text-slate-400'}`}>Tech Consult</button>
+        <button onClick={() => setMode('HISTORY')} className={`flex-none px-6 py-3 text-xs font-black rounded-xl transition-all ${mode === 'HISTORY' ? 'text-indigo-600 bg-indigo-50 shadow-sm' : 'text-slate-400'}`}>History</button>
       </div>
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center space-x-3">
-          <p className="text-xs text-red-600 font-bold">{error}</p>
+        <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center space-x-3">
+          <p className="text-xs text-rose-600 font-bold">{error}</p>
         </div>
       )}
 
       {mode === 'IMAGE' && (
         <>
-          <div className="bg-white rounded-3xl p-5 shadow-sm border border-slate-100">
-            <h3 className="text-base font-black text-slate-800 mb-4">上传图像</h3>
-            <div onClick={() => fileInputRef.current?.click()} className={`border-2 border-dashed border-slate-200 rounded-[1.5rem] flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-50/30 transition-all ${image ? 'py-4' : 'py-8'}`}>
-              {image ? <img src={image} className="max-h-48 rounded-xl shadow-lg" /> : <span className="text-slate-800 font-black text-xs">点击上传电路图或PCB照片</span>}
+          <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100">
+            <h3 className="text-base font-black text-slate-800 mb-4 tracking-tight">Upload Hardware Snapshot</h3>
+            <div onClick={() => fileInputRef.current?.click()} className={`border-2 border-dashed border-slate-200 rounded-[1.5rem] flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-50/30 transition-all ${image ? 'py-4' : 'py-12'}`}>
+              {image ? <img src={image} className="max-h-56 rounded-2xl shadow-xl" /> : (
+                <div className="text-center space-y-2">
+                  <div className="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-2 text-slate-300">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                  </div>
+                  <span className="text-slate-400 font-bold text-xs">Tap to upload Schematic or PCB photo</span>
+                </div>
+              )}
             </div>
             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
           </div>
 
-          <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-            <h3 className="text-xs font-black text-slate-800 mb-4 uppercase tracking-widest">分析任务</h3>
-            <div className="flex flex-wrap gap-2 mb-6">
+          <div className="bg-white rounded-[2rem] p-7 shadow-sm border border-slate-100">
+            <h3 className="text-[10px] font-black text-slate-400 mb-5 uppercase tracking-widest">Select AI Workflow</h3>
+            <div className="flex flex-wrap gap-2 mb-8">
               {tasks.map(task => (
-                <button key={task} onClick={() => setActiveTask(task)} className={`px-3 py-2 rounded-xl text-[10px] font-black transition-all ${activeTask === task ? 'bg-indigo-600 text-white shadow-md' : 'bg-slate-50 text-slate-400'}`}>{task}</button>
+                <button key={task} onClick={() => setActiveTask(task)} className={`px-4 py-2.5 rounded-xl text-[10px] font-black transition-all ${activeTask === task ? 'bg-indigo-600 text-white shadow-lg' : 'bg-slate-50 text-slate-400 hover:text-slate-600'}`}>{task}</button>
               ))}
             </div>
-            <textarea value={customPrompt} onChange={(e) => setCustomPrompt(e.target.value)} className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-medium h-24 resize-none mb-4 outline-none" />
-            <button onClick={() => triggerAnalysis()} disabled={analyzing || !image} className="w-full py-3.5 bg-indigo-600 text-white rounded-2xl text-xs font-black shadow-lg shadow-indigo-200 active:scale-95 transition-all disabled:bg-slate-200">{analyzing ? '分析中...' : '开始分析'}</button>
+            <textarea value={customPrompt} onChange={(e) => setCustomPrompt(e.target.value)} className="w-full p-5 bg-slate-50 border border-slate-100 rounded-2xl text-xs font-medium h-28 resize-none mb-6 outline-none focus:ring-2 focus:ring-indigo-500/10" />
+            <button onClick={() => triggerAnalysis()} disabled={analyzing || !image} className="w-full py-4.5 bg-indigo-600 text-white rounded-2xl text-xs font-black shadow-xl shadow-indigo-100 active:scale-95 transition-all disabled:bg-slate-200">
+              {analyzing ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                  Processing Analysis...
+                </span>
+              ) : 'Execute Engineering Review'}
+            </button>
             {result && (
-              <div className="mt-8 p-6 bg-slate-50 rounded-2xl border border-slate-200">
+              <div className="mt-8 p-6 bg-slate-50 rounded-2xl border border-slate-200 animate-in slide-in-from-bottom-4 duration-500">
                 <div className="prose prose-sm prose-slate max-w-none"><ReactMarkdown>{result}</ReactMarkdown></div>
               </div>
             )}
@@ -140,13 +154,20 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ credits, onConsume, history, 
       {mode === 'HISTORY' && (
         <div className="space-y-4 pb-20">
            {history.map(item => (
-             <div key={item.id} className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm">
-                <div className="flex justify-between items-start">
-                   <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight">{item.task}</h4>
+             <div key={item.id} className="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex items-center space-x-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-none ${item.type === 'IMAGE' ? 'bg-indigo-50 text-indigo-500' : 'bg-emerald-50 text-emerald-500'}`}>
+                   {item.type === 'IMAGE' ? <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" strokeWidth={2}/></svg> : <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" strokeWidth={2}/></svg>}
+                </div>
+                <div className="flex-1 min-w-0">
+                   <h4 className="text-xs font-black text-slate-800 uppercase tracking-tight truncate">{item.task}</h4>
                    <p className="text-[10px] text-slate-400">{item.timestamp}</p>
                 </div>
+                <button className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg active:scale-95 transition-all">View</button>
              </div>
            ))}
+           {history.length === 0 && (
+              <div className="py-24 text-center text-slate-300 font-bold italic text-sm">No activity history yet</div>
+           )}
         </div>
       )}
     </div>
