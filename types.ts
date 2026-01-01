@@ -118,3 +118,17 @@ export interface NewsItem {
   affected: string[];
   scenarios: string[];
 }
+
+export interface StockData {
+  symbol: string;
+  name: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  history: number[];
+  marketCap?: string;
+  peRatio?: string;
+  high52w?: string;
+  low52w?: string;
+  volume?: string;
+}

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { NewsItem, ComponentData } from './types';
+import { NewsItem, ComponentData, StockData } from './types';
 
 export const COLORS = {
   primary: '#4F46E5', // Indigo-600
@@ -10,11 +10,55 @@ export const COLORS = {
 
 export const NEWS_CATEGORIES = [
   "All",
+  "Stocks",
   "New Products",
   "Dev Boards",
   "Tools",
   "Technology",
   "Papers"
+];
+
+export const MOCK_STOCKS: StockData[] = [
+  {
+    symbol: 'NVDA',
+    name: 'NVIDIA Corp',
+    price: 135.58,
+    change: 2.45,
+    changePercent: 1.84,
+    history: [128, 130, 129, 132, 131, 134, 135.58]
+  },
+  {
+    symbol: 'STM',
+    name: 'STMicroelectronics',
+    price: 28.42,
+    change: -0.15,
+    changePercent: -0.52,
+    history: [29.1, 28.8, 28.9, 28.5, 28.6, 28.3, 28.42]
+  },
+  {
+    symbol: 'TSM',
+    name: 'TSMC ADR',
+    price: 188.20,
+    change: 3.12,
+    changePercent: 1.68,
+    history: [182, 184, 185, 183, 186, 187, 188.2]
+  },
+  {
+    symbol: 'ARM',
+    name: 'Arm Holdings',
+    price: 142.15,
+    change: 1.05,
+    changePercent: 0.74,
+    history: [138, 140, 139, 141, 140, 143, 142.15]
+  },
+  {
+    symbol: 'ADI',
+    name: 'Analog Devices',
+    price: 215.40,
+    change: -1.20,
+    changePercent: -0.55,
+    history: [218, 217, 219, 216, 215, 217, 215.4]
+  }
 ];
 
 export const MOCK_COMPONENTS: ComponentData[] = [
