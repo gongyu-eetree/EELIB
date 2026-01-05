@@ -63,8 +63,29 @@ const NewsDetail: React.FC<NewsDetailProps> = ({ news, onBack, isFavorited, onTo
     setToast(!isFavorited ? 'Saved to Favorites' : 'Removed from Favorites');
   };
 
-  const handleShare = (type: string) => {
-    setToast(`Shared to ${type}`);
+  const handleShare = async (type: string) => {
+    const url = window.location.href; // In a real app this would be the deep link
+    const text = `Check out this news: ${news.title}`;
+
+    switch (type) {
+      case 'Twitter':
+        window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'LinkedIn':
+        window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+        break;
+      case 'Email':
+        window.location.href = `mailto:?subject=${encodeURIComponent(news.title)}&body=${encodeURIComponent(text + '\n\n' + url)}`;
+        break;
+      case 'Copy':
+        try {
+          await navigator.clipboard.writeText(`${text}\n${url}`);
+          setToast('Link copied to clipboard');
+        } catch (err) {
+          setToast('Failed to copy');
+        }
+        break;
+    }
     setShowShareModal(false);
   };
 
@@ -217,7 +238,7 @@ const NewsDetail: React.FC<NewsDetailProps> = ({ news, onBack, isFavorited, onTo
              </div>
              <div className="grid grid-cols-4 gap-6">
                 {[
-                  { name: 'Twitter', icon: 'M4 4l5 5 5-5M4 20l5-5 5 5M4 12h16', color: 'bg-black' }, // Simplified Twitter icon for demo
+                  { name: 'Twitter', icon: 'M4 4l5 5 5-5M4 20l5-5 5 5M4 12h16', color: 'bg-black' },
                   { name: 'LinkedIn', icon: 'M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z', color: 'bg-blue-600' },
                   { name: 'Email', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', color: 'bg-indigo-500' },
                   { name: 'Copy', icon: 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1', color: 'bg-slate-500' }

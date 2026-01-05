@@ -43,9 +43,9 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ credits, onConsume, history, 
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        const base64 = (reader.result as string).split(',')[1];
+        // Just set the image, DO NOT trigger analysis automatically
         setImage(reader.result as string);
-        triggerAnalysis(base64);
+        setResult(null); // Clear previous results
       };
       reader.readAsDataURL(file);
     }
@@ -117,7 +117,15 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ credits, onConsume, history, 
               className={`border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-50/30 transition-all ${image ? 'py-4' : 'py-16'}`}
             >
               {image ? (
-                <img src={image} className="max-h-64 rounded-3xl shadow-2xl border-4 border-white" />
+                <div className="relative">
+                   <img src={image} className="max-h-64 rounded-3xl shadow-2xl border-4 border-white" />
+                   <button 
+                     onClick={(e) => { e.stopPropagation(); setImage(null); setResult(null); }}
+                     className="absolute -top-2 -right-2 bg-slate-800 text-white rounded-full p-1.5 shadow-md hover:bg-rose-500 transition-colors"
+                   >
+                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                   </button>
+                </div>
               ) : (
                 <div className="text-center space-y-4">
                   <div className="w-16 h-16 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto text-slate-300 shadow-inner">
@@ -130,7 +138,6 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ credits, onConsume, history, 
                 </div>
               )}
             </div>
-            {/* Accept image/* usually triggers both camera and gallery on mobile devices */}
             <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
           </div>
 
@@ -146,6 +153,11 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ credits, onConsume, history, 
                   {task}
                 </button>
               ))}
+            </div>
+            
+            <div className="mb-2 flex items-center justify-between px-2">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Analysis Prompt</span>
+              <span className="text-[9px] text-indigo-400 font-bold cursor-pointer hover:text-indigo-600" onClick={() => setCustomPrompt(taskPrompts[activeTask])}>Reset Default</span>
             </div>
             <textarea 
               value={customPrompt} 

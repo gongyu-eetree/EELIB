@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
@@ -56,7 +55,8 @@ export async function componentChat(query: string, imageBase64?: string | null) 
 }
 
 export async function deepComponentSearch(query: string) {
-  const model = "gemini-3-pro-preview"; // Use Pro for better structured JSON generation
+  // Switched to flash-preview for better stability with strict JSON generation
+  const model = "gemini-3-flash-preview"; 
   try {
     const response = await ai.models.generateContent({
       model,
@@ -162,7 +162,11 @@ export async function deepComponentSearch(query: string) {
     });
     
     // Process response to ensure it matches the full ComponentData type approximately
-    const rawData = JSON.parse(response.text || "[]");
+    const responseText = response.text || "[]";
+    // Sanitize if markdown block is present (sometimes flash does this even with json mode)
+    const jsonStr = responseText.replace(/```json\n?|```/g, '');
+    const rawData = JSON.parse(jsonStr);
+    
     return rawData.map((item: any) => ({
       ...item,
       id: `ai_${Math.random().toString(36).substr(2, 9)}`,
@@ -251,7 +255,11 @@ export async function generateHardwareSolution(requirement: string) {
         }
       }
     });
-    return JSON.parse(response.text || "{}");
+    
+    // Process response text to handle potential markdown code blocks
+    const responseText = response.text || "{}";
+    const jsonStr = responseText.replace(/```json\n?|```/g, '');
+    return JSON.parse(jsonStr);
   } catch (error) {
     console.error("Generate Solution Error:", error);
     throw error;

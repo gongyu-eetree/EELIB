@@ -46,6 +46,18 @@ const ComponentSearch: React.FC<ComponentSearchProps> = ({ onConsume, favorites,
     }
   };
 
+  const downloadMockFile = (filename: string, content: string) => {
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const renderDetailContent = () => {
     if (!selectedComponent) return null;
 
@@ -208,17 +220,26 @@ const ComponentSearch: React.FC<ComponentSearchProps> = ({ onConsume, favorites,
                    
                    <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-3">
-                        <button className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg active:scale-95 flex flex-col items-center justify-center space-y-1">
+                        <button 
+                          onClick={() => downloadMockFile(`${selectedComponent.name}.kicad_sym`, `(kicad_symbol_lib (version 20211014) (generator "EELIB_AI")\n  (symbol "${selectedComponent.name}" (in_bom yes) (on_board yes)\n    (property "Reference" "U" (id 0) (at 0 0 0) (effects (font (size 1.27 1.27))))\n    (property "Value" "${selectedComponent.name}" (id 1) (at 0 -2 0) (effects (font (size 1.27 1.27))))\n    (symbol "${selectedComponent.name}_1_1"\n      (rectangle (start -5 10) (end 5 -10) (stroke (width 0.254)) (fill (type background)))\n    )\n  )\n)`)}
+                          className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg active:scale-95 flex flex-col items-center justify-center space-y-1"
+                        >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M7 10l5 5 5-5M12 4v11" /></svg>
                           <span>KiCad Symbol</span>
                         </button>
-                        <button className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg active:scale-95 flex flex-col items-center justify-center space-y-1">
+                        <button 
+                          onClick={() => downloadMockFile(`${selectedComponent.name}.kicad_mod`, `(footprint "${selectedComponent.specs['Package'] || 'Package'}" (layer "F.Cu")\n  (tedit 5F3B1A2C)\n  (descr "${selectedComponent.description}")\n  (tags "BGA ${selectedComponent.name}")\n  (attr smd)\n  (fp_text reference "REF**" (at 0 -2) (layer "F.SilkS"))\n  (fp_text value "${selectedComponent.name}" (at 0 2) (layer "F.Fab"))\n)`)}
+                          className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg active:scale-95 flex flex-col items-center justify-center space-y-1"
+                        >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M7 10l5 5 5-5M12 4v11" /></svg>
                           <span>KiCad Footprint</span>
                         </button>
                       </div>
 
-                      <button className="w-full py-4 bg-slate-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg active:scale-95 flex items-center justify-center">
+                      <button 
+                        onClick={() => downloadMockFile(`${selectedComponent.name}.step`, `ISO-10303-21;\nHEADER;\nFILE_DESCRIPTION(('STEP AP214'),'2;1');\nFILE_NAME('${selectedComponent.name}.step');\nENDSEC;\nDATA;\n/* MOCK 3D DATA FOR ${selectedComponent.name} */\nENDSEC;\nEND-ISO-10303-21;`)}
+                        className="w-full py-4 bg-slate-900 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-800 transition-all shadow-lg active:scale-95 flex items-center justify-center"
+                      >
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M7 10l5 5 5-5M12 4v11" /></svg>
                         Download 3D STEP Model (.step)
                       </button>
@@ -284,7 +305,13 @@ const ComponentSearch: React.FC<ComponentSearchProps> = ({ onConsume, favorites,
                   )}
                   
                   <div className="px-5 py-3.5 bg-slate-50 border-t border-slate-100 flex justify-end">
-                     <button className="px-8 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.1em] shadow-lg active:scale-95 transition-all">
+                     <button 
+                       onClick={() => {
+                         const searchTeam = encodeURIComponent(`${selectedComponent.name} ${source.distributor} buy`);
+                         window.open(`https://www.google.com/search?q=${searchTeam}`, '_blank');
+                       }}
+                       className="px-8 py-2.5 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.1em] shadow-lg active:scale-95 transition-all"
+                     >
                        View Listing
                      </button>
                   </div>
