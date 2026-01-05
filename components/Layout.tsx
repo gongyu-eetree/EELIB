@@ -44,11 +44,13 @@ const Layout: React.FC<LayoutProps> = ({ activeTab, setActiveTab, children }) =>
 
   return (
     <div className="flex flex-col h-screen overflow-hidden bg-slate-50 relative">
-      <header className="flex-none px-6 py-4 bg-indigo-600 text-white flex justify-between items-center shadow-lg z-50 relative">
-        <h1 className="text-xl font-black tracking-tight uppercase">EELIB</h1>
+      {/* Global Header with Safe Area Top */}
+      <header className="flex-none px-6 pb-4 bg-indigo-600 text-white flex justify-between items-center shadow-lg z-50 relative pt-[calc(1rem+env(safe-area-inset-top))]">
+        <h1 className="text-xl font-black tracking-tight uppercase select-none">EELIB</h1>
         <div className="flex space-x-2">
            <button 
              onClick={() => setShowNotifications(!showNotifications)}
+             aria-label="Toggle notifications"
              className="p-2 hover:bg-white/10 rounded-full transition-colors relative"
            >
              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
@@ -60,12 +62,12 @@ const Layout: React.FC<LayoutProps> = ({ activeTab, setActiveTab, children }) =>
         {showNotifications && (
           <>
             <div className="fixed inset-0 z-40 bg-transparent" onClick={() => setShowNotifications(false)}></div>
-            <div className="absolute top-full right-4 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-top-right text-slate-800">
+            <div className="absolute top-full right-4 mt-2 w-[calc(100vw-2rem)] sm:w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200 origin-top-right text-slate-800">
                <div className="px-5 py-3 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
-                 <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Notifications</h3>
+                 <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-500">Notifications</h2>
                  {unreadCount > 0 && <button onClick={markAllRead} className="text-[10px] font-bold text-indigo-600 hover:text-indigo-700">Mark all read</button>}
                </div>
-               <div className="max-h-[300px] overflow-y-auto">
+               <div className="max-h-[300px] overflow-y-auto overscroll-contain no-scrollbar">
                  {notifications.length === 0 ? (
                    <div className="py-8 text-center text-slate-400 text-xs font-medium">No new notifications</div>
                  ) : (
@@ -85,22 +87,33 @@ const Layout: React.FC<LayoutProps> = ({ activeTab, setActiveTab, children }) =>
         )}
       </header>
 
-      <main className="flex-1 overflow-y-auto pb-24 px-4 pt-4 no-scrollbar">
-        {children}
+      {/* Main Content Area */}
+      <main className="flex-1 overflow-y-auto px-4 pt-4 no-scrollbar overscroll-contain">
+        <div className="max-w-4xl mx-auto w-full pb-[calc(5rem+env(safe-area-inset-bottom))]">
+          {children}
+        </div>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-2xl safe-bottom z-50">
-        <div className="flex justify-around items-center py-2 px-2">
+      {/* Bottom Navigation with Safe Area Bottom */}
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-10px_30px_-15px_rgba(0,0,0,0.1)] z-50 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))]">
+        <div className="max-w-4xl mx-auto flex justify-around items-center px-4">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex flex-col items-center p-2 transition-all duration-300 ${
-                activeTab === tab.id ? 'text-indigo-600 transform scale-110' : 'text-slate-400 opacity-60'
+              className={`flex flex-col items-center p-2 transition-all duration-300 relative group ${
+                activeTab === tab.id ? 'text-indigo-600' : 'text-slate-400'
               }`}
             >
-              {tab.icon}
-              <span className="text-[9px] mt-1.5 font-black uppercase tracking-widest">{tab.label}</span>
+              <div className={`transition-transform duration-300 ${activeTab === tab.id ? 'scale-110 -translate-y-0.5' : 'group-hover:scale-105'}`}>
+                {tab.icon}
+              </div>
+              <span className={`text-[9px] mt-1.5 font-black uppercase tracking-widest transition-opacity ${activeTab === tab.id ? 'opacity-100' : 'opacity-60'}`}>
+                {tab.label}
+              </span>
+              {activeTab === tab.id && (
+                <span className="absolute -top-1 w-1 h-1 bg-indigo-600 rounded-full shadow-[0_0_8px_rgba(79,70,229,0.5)]"></span>
+              )}
             </button>
           ))}
         </div>
